@@ -1,25 +1,50 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import React, { Component } from "react";
+import Elements from "./components/elements";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends Component {
+    state = {
+        elements: [],
+    };
+
+    componentDidMount() {
+        const elements = localStorage.getItem("elements");
+        if (elements) {
+            this.setState({ elements: JSON.parse(elements) });
+        }
+    }
+
+    componentDidUpdate() {
+        localStorage.setItem("elements", JSON.stringify(this.state.elements));
+    }
+
+    handleDelete = (element) => {
+        const elements = this.state.elements.filter((e) => e.id !== element.id);
+        this.setState({ elements });
+    };
+
+    handleCreate = () => {
+        const message = document.getElementById("message").value;
+        const id = this.state.elements.length + 1;
+        const elements = this.state.elements;
+        elements.push({ id, message });
+        this.setState({ elements });
+        document.getElementById("message").value = "";
+    };
+
+    render() {
+        return (
+            <React.Fragment className="container-fluid d-flex flex-column ms-5 justify-content-center align-items-center">
+                <main className="container-fluid">
+                    <Elements
+                        elements={this.state.elements}
+                        onDelete={this.handleDelete}
+                        onCreate={this.handleCreate}
+                    />
+                </main>
+            </React.Fragment>
+        );
+    }
 }
 
 export default App;
